@@ -15,3 +15,7 @@ Run the command: alembic upgrade head
 Run server: uvicorn app.main:app --host localhost --port 8000 --reload
 
 <h2>FrontEnd</h2>
+
+Run: npm start
+
+The app will run on localhost:3000

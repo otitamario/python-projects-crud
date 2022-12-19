@@ -1,47 +1,54 @@
 import ProjectService from "../services/ProjectService";
-import React, { Component } from 'react'
-import { Container, Row, Col } from 'reactstrap'
+import React, { Component } from "react";
+import { Container, Row, Col } from "reactstrap";
 import ModalForm from "./Modals/ModalForm";
 import DataTable from "./Tables/DataTable";
 
 class Dashboard extends Component {
   state = {
-    items: []
+    projects: [],
+  };
+
+  getprojects() {
+    ProjectService.getProjects()
+      .then((response) => {
+        console.log(response);
+        const projects = response.data.projects;
+        this.setState({ projects });
+      })
+      .catch((err) => console.log(err));
   }
 
-  getItems(){
-    fetch('http://localhost:3000/crud')
-      .then(response => response.json())
-      .then(items => this.setState({items}))
-      .catch(err => console.log(err))
-  }
+  addprojectToState = (project) => {
+    this.setState((prevState) => ({
+      projects: [...prevState.projects, project],
+    }));
+  };
 
-  addItemToState = (item) => {
-    this.setState(prevState => ({
-      items: [...prevState.items, item]
-    }))
-  }
-
-  updateState = (item) => {
-    const itemIndex = this.state.items.findIndex(data => data.id === item.id)
+  updateState = (project) => {
+    const projectIndex = this.state.projects.findIndex(
+      (data) => data.id === project.id
+    );
     const newArray = [
-    // destructure all items from beginning to the indexed item
-      ...this.state.items.slice(0, itemIndex),
-    // add the updated item to the array
-      item,
-    // add the rest of the items to the array from the index after the replaced item
-      ...this.state.items.slice(itemIndex + 1)
-    ]
-    this.setState({ items: newArray })
-  }
+      // destructure all projects from beginning to the indexed project
+      ...this.state.projects.slice(0, projectIndex),
+      // add the updated project to the array
+      project,
+      // add the rest of the projects to the array from the index after the replaced project
+      ...this.state.projects.slice(projectIndex + 1),
+    ];
+    this.setState({ projects: newArray });
+  };
 
-  deleteItemFromState = (id) => {
-    const updatedItems = this.state.items.filter(item => item.id !== id)
-    this.setState({ items: updatedItems })
-  }
+  deleteprojectFromState = (id) => {
+    const updatedprojects = this.state.projects.filter(
+      (project) => project.id !== id
+    );
+    this.setState({ projects: updatedprojects });
+  };
 
-  componentDidMount(){
-    this.getItems()
+  componentDidMount() {
+    this.getprojects();
   }
 
   render() {
@@ -49,22 +56,29 @@ class Dashboard extends Component {
       <Container className="App">
         <Row>
           <Col>
-            <h1 style={{margin: "20px 0"}}>CRUD Database</h1>
+            <h1 style={{ margin: "20px 0" }}>Projects</h1>
           </Col>
         </Row>
         <Row>
           <Col>
-            <DataTable items={this.state.items} updateState={this.updateState} deleteItemFromState={this.deleteItemFromState} />
+            <DataTable
+              projects={this.state.projects}
+              updateState={this.updateState}
+              deleteprojectFromState={this.deleteprojectFromState}
+            />
           </Col>
         </Row>
         <Row>
           <Col>
-            <ModalForm buttonLabel="Add Item" addItemToState={this.addItemToState}/>
+            <ModalForm
+              buttonLabel="Add Project"
+              addprojectToState={this.addprojectToState}
+            />
           </Col>
         </Row>
       </Container>
-    )
+    );
   }
 }
 
-export default Dashboard
+export default Dashboard;
